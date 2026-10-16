@@ -7,6 +7,7 @@ from .geo import Place
 from .risk import classify_checkpoint
 from .sampling import Checkpoint, sample_checkpoints
 from .scoring import Candidate, RiskTotals, rank, summarize_risk
+from .simplify import thin
 
 
 def iso(moment: datetime) -> str:
@@ -106,7 +107,7 @@ def _route_payload(route: Route, position: int, recommended: bool, assessment: t
             "avg_risk": round(totals.avg_risk, 2),
             "max_level": totals.max_level.label,
         },
-        "geometry": [[round(lon, 5), round(lat, 5)] for lat, lon in route.points],
+        "geometry": [[round(lon, 5), round(lat, 5)] for lat, lon in thin(route.points)],
         "checkpoints": checkpoints,
     }
 

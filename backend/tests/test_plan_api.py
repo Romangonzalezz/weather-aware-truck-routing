@@ -197,3 +197,16 @@ def test_only_post_is_allowed(client):
 
     assert response.status_code == 405
     assert "error" in response.json()
+
+
+def test_geometry_is_thinned_for_rendering_but_keeps_the_route_ends(client, services):
+    raw = {r.id: r.points for r in fetch_routes(Place("a", **DALLAS), Place("b", **DENVER), load_lb=0)}
+
+    data = post(client, body()).json()
+
+    for route in data["routes"]:
+        full = raw[route["id"]]
+        assert 2 < len(route["geometry"]) < len(full)
+        assert len(route["geometry"]) <= 1500
+        assert route["geometry"][0] == [round(full[0][1], 5), round(full[0][0], 5)]
+        assert route["geometry"][-1] == [round(full[-1][1], 5), round(full[-1][0], 5)]
