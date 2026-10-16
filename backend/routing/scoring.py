@@ -38,12 +38,13 @@ def summarize_risk(segments: list[tuple[float, Level]]) -> RiskTotals:
 
 def _risk_key(candidate: Candidate) -> tuple[float, float, float, float]:
     risk = candidate.risk
-    # Rounded so float noise in summed miles cannot decide a tie.
+    # Rounded so float noise in summed miles cannot decide a tie, and to the two decimals the
+    # UI shows for average risk: routes that read as equally risky are then split by travel time.
     return (
         round(risk.no_travel_mi, 1),
         round(risk.severe_mi, 1),
         round(risk.high_mi, 1),
-        round(risk.avg_risk, 3),
+        round(risk.avg_risk, 2),
     )
 
 

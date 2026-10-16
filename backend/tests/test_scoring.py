@@ -99,3 +99,10 @@ def test_identical_routes_report_equivalence():
     ranked, reason = rank([a, b])
     assert [x.route_id for x in ranked] == ["a", "b"]
     assert reason == "Routes are equivalent on risk and time"
+
+
+def test_average_risks_that_display_the_same_tie_and_fall_through_to_travel_time():
+    slower = candidate("slower", [(972, L), (28, M)], 13.5)  # 0.028, shown as 0.03
+    faster = candidate("faster", [(966, L), (34, M)], 13.1)  # 0.034, shown as 0.03
+    ordered, _ = rank([slower, faster])
+    assert [c.route_id for c in ordered] == ["faster", "slower"]
