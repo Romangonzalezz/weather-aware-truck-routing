@@ -10,3 +10,4 @@ dist/
 db.sqlite3
 staticfiles/
 .pytest_cache/
+LOOM_SCRIPT.md
