@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 from typing import Any
 
 import httpx
@@ -10,6 +11,8 @@ from ..errors import UpstreamError
 USER_AGENT = "truck-routing-demo/1.0"
 TIMEOUT = httpx.Timeout(20.0, connect=5.0)
 ATTEMPTS = 2
+
+logger = logging.getLogger(__name__)
 
 client = httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=TIMEOUT)
 
@@ -39,6 +42,8 @@ def request_json(service: str, method: str, url: str, **kwargs: Any) -> Any:
         except (httpx.HTTPError, ValueError) as exc:
             if attempt + 1 < ATTEMPTS and isinstance(exc, httpx.HTTPError) and _is_transient(exc):
                 continue
+            detail = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else type(exc).__name__
+            logger.warning("%s request failed (%s): %s", service, detail, url)
             raise UpstreamError(f"{service} is unavailable") from exc
     cache.set(key, body)
     return body
