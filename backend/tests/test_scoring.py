@@ -69,13 +69,22 @@ def test_travel_time_breaks_a_full_tie():
     assert reason == "All routes tie on risk; fastest by 22 min"
 
 
-def test_time_tie_break_when_only_the_top_routes_tie_on_risk():
+def test_reason_names_the_risk_gap_and_mentions_the_time_break_among_tied_routes():
     a = candidate("a", [(100, M)], 10)
     b = candidate("b", [(100, M)], 9)
     c = candidate("c", [(100, H)], 8)
     ranked, reason = rank([a, b, c])
     assert [x.route_id for x in ranked] == ["b", "a", "c"]
-    assert reason == "Ties the next route on risk; faster by 60 min"
+    assert reason == "Fewest high-risk miles (0 vs 100); fastest of the tied routes by 60 min"
+
+
+def test_reason_compares_against_the_worst_route_on_the_deciding_criterion():
+    a = candidate("a", [(100, L)], 10)
+    b = candidate("b", [(50, S), (50, L)], 8)
+    c = candidate("c", [(80, S), (20, L)], 7)
+    ranked, reason = rank([c, b, a])
+    assert [x.route_id for x in ranked] == ["a", "b", "c"]
+    assert reason == "Fewest severe-risk miles (0 vs 80)"
 
 
 def test_single_route_is_recommended_without_comparison():

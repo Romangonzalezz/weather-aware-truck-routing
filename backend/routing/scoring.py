@@ -61,19 +61,21 @@ _CRITERIA = [
 
 
 def rank(candidates: list[Candidate]) -> tuple[list[Candidate], str]:
-    """Order candidates best first and explain what separated the best from the runner-up."""
+    """Order candidates best first and say which criterion set the best one apart."""
     ordered = sorted(candidates, key=_sort_key)
     if len(ordered) < 2:
         return ordered, "Only one route available"
 
-    best, runner_up = ordered[0], ordered[1]
-    for (label, number_format), mine, theirs in zip(_CRITERIA, _risk_key(best), _risk_key(runner_up)):
-        if mine != theirs:
-            return ordered, f"{label} ({mine:{number_format}} vs {theirs:{number_format}})"
+    keys = [_risk_key(c) for c in ordered]
+    minutes_faster = round((ordered[1].duration_s - ordered[0].duration_s) / 60)
+    for position, (label, number_format) in enumerate(_CRITERIA):
+        best, worst = keys[0][position], max(key[position] for key in keys)
+        if best != worst:
+            reason = f"{label} ({best:{number_format}} vs {worst:{number_format}})"
+            if keys[1] == keys[0] and minutes_faster > 0:
+                reason += f"; fastest of the tied routes by {minutes_faster} min"
+            return ordered, reason
 
-    minutes_faster = round((runner_up.duration_s - best.duration_s) / 60)
     if minutes_faster <= 0:
         return ordered, "Routes are equivalent on risk and time"
-    if all(_risk_key(c) == _risk_key(best) for c in ordered):
-        return ordered, f"All routes tie on risk; fastest by {minutes_faster} min"
-    return ordered, f"Ties the next route on risk; faster by {minutes_faster} min"
+    return ordered, f"All routes tie on risk; fastest by {minutes_faster} min"

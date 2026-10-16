@@ -1,4 +1,5 @@
 import json
+from datetime import date, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -48,3 +49,33 @@ def upstream(monkeypatch) -> FakeUpstream:
     fake = FakeUpstream()
     monkeypatch.setattr(http.client, "request", fake.request)
     return fake
+
+
+def hourly_weather(storm=None, calm_wind: float = 8.0):
+    """An Open-Meteo handler: calm everywhere except where storm(lat, lon) returns weather values."""
+
+    def respond(method, url, params, **kwargs):
+        first = date.fromisoformat(params["start_date"])
+        last = date.fromisoformat(params["end_date"])
+        times = [
+            f"{first + timedelta(days=day)}T{hour:02d}:00" for day in range((last - first).days + 1) for hour in range(24)
+        ]
+        lats = [float(v) for v in params["latitude"].split(",")]
+        lons = [float(v) for v in params["longitude"].split(",")]
+        locations = []
+        for lat, lon in zip(lats, lons):
+            values = (storm(lat, lon) if storm else None) or {}
+            locations.append(
+                {
+                    "hourly": {
+                        "time": times,
+                        "wind_speed_10m": [values.get("wind", calm_wind)] * len(times),
+                        "rain": [values.get("rain", 0.0)] * len(times),
+                        "showers": [0.0] * len(times),
+                        "snowfall": [values.get("snow", 0.0)] * len(times),
+                    }
+                }
+            )
+        return locations
+
+    return respond
