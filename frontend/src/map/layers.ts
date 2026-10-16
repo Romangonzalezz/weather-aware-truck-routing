@@ -23,7 +23,7 @@ export function addTripLayers(map: MapLibreMap): void {
       paint: {
         "heatmap-weight": heatmapWeight(0),
         "heatmap-radius": heatmapRadius(DEFAULT_SPACING_DEG),
-        "heatmap-intensity": 0.9,
+        "heatmap-intensity": 1.2,
         "heatmap-color": HEATMAP_COLOR,
         "heatmap-opacity": 0.8,
       },

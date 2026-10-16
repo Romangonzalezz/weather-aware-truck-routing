@@ -9,8 +9,8 @@ export interface Place {
 export type IntervalMiles = 10 | 25 | 50;
 
 export interface PlanRequest {
-  origin: string | { lat: number; lon: number };
-  destination: string | { lat: number; lon: number };
+  origin: string | Place;
+  destination: string | Place;
   departure: string;
   load_lb: number;
   interval_miles: IntervalMiles;

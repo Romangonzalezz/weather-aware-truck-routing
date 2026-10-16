@@ -1,11 +1,15 @@
-import { type GeoJSONSource, Map as MapLibreMap, NavigationControl, Popup } from "maplibre-gl";
+import { type GeoJSONSource, Map as MapLibreMap, NavigationControl, Popup, setWorkerUrl } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import { useEffect, useRef, useState } from "react";
 import type { Corridor, Plan, Route } from "../api/types";
 import { checkpointFeatures, corridorFeatures, routeBounds, routeFeatures } from "./geojson";
 import { heatmapRadius, heatmapWeight } from "./heatmap";
 import { addTripLayers, LAYERS, SOURCES, STYLE_URL, styleSelectedRoute } from "./layers";
 import { checkpointPopup } from "./popup";
+
+// MapLibre finds its worker next to its own script, which bundling breaks; serve it as a plain asset instead.
+setWorkerUrl(workerUrl);
 
 const US_CENTER: [number, number] = [-97, 39];
 const FIT_PADDING = 60;

@@ -18,12 +18,18 @@ export function heatmapRadius(spacingDeg: number): ExpressionSpecification {
   return ["interpolate", ["exponential", 2], ["zoom"], 0, pixelsAtZoom0, LAST_RADIUS_ZOOM, pixelsAtZoom0 * 2 ** LAST_RADIUS_ZOOM];
 }
 
+const CLEAR = "rgba(46, 157, 91, 0)";
+const CALM_DENSITY = 0.12;
+
 // Density 0-1 is score / 4, so each level's color lands where its score range begins.
 export const HEATMAP_COLOR: ExpressionSpecification = [
   "interpolate",
   ["linear"],
   ["heatmap-density"],
   0,
-  "rgba(46, 157, 91, 0)",
+  CLEAR,
+  // Calm weather scores about 0.3 of 4; staying clear up to here keeps it from tinting the basemap.
+  CALM_DENSITY,
+  CLEAR,
   ...LEVELS.slice(1).flatMap((level, offset) => [(offset + 1) / MAX_SCORE, level.color]),
 ];

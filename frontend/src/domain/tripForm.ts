@@ -48,5 +48,5 @@ export function corridorRequestFor(plan: Plan): CorridorRequest {
 }
 
 function placeInput({ text, place }: PlaceField): PlanRequest["origin"] {
-  return place ? { lat: place.lat, lon: place.lon } : text.trim();
+  return place ? { lat: place.lat, lon: place.lon, name: place.name } : text.trim();
 }

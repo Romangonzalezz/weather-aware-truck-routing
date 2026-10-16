@@ -18,7 +18,7 @@ describe("planRequestFrom", () => {
       ok: true,
       request: {
         origin: "Dallas, TX",
-        destination: { lat: 39.74, lon: -104.99 },
+        destination: { lat: 39.74, lon: -104.99, name: "Denver, CO, United States" },
         departure: new Date(2026, 9, 17, 8, 0).toISOString(),
         load_lb: 38000,
         interval_miles: 25,
