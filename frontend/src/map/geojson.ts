@@ -10,7 +10,9 @@ type Line = { type: "LineString"; coordinates: Position[] };
 type Point = { type: "Point"; coordinates: Position };
 
 // Recommended route first; blue stands apart from the risk scale, which owns green to purple.
-const ROUTE_COLORS = ["#1d4ed8", "#334155", "#78716c"];
+const ROUTE_COLORS = ["#1d4ed8", "#0e7490", "#475569"];
+
+export const routeColorForRank = (rank: number) => ROUTE_COLORS[(rank - 1) % ROUTE_COLORS.length];
 
 export const scoreProperty = (hour: number) => `s${hour}`;
 
@@ -24,7 +26,7 @@ export function routeFeatures(routes: Route[]): FeatureCollection<Line, { id: st
         id: route.id,
         rank: route.rank,
         recommended: route.recommended,
-        color: ROUTE_COLORS[(route.rank - 1) % ROUTE_COLORS.length],
+        color: routeColorForRank(route.rank),
       },
     })),
   };

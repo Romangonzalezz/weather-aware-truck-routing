@@ -1,6 +1,7 @@
 import type { Corridor, CorridorRequest, Place, Plan, PlanRequest } from "./types";
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+// Production serves the API from the same origin; in dev the Django server runs on its own port.
+const BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 export class ApiError extends Error {}
 
