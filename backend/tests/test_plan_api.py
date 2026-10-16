@@ -210,3 +210,10 @@ def test_geometry_is_thinned_for_rendering_but_keeps_the_route_ends(client, serv
         assert len(route["geometry"]) <= 1500
         assert route["geometry"][0] == [round(full[0][1], 5), round(full[0][0], 5)]
         assert route["geometry"][-1] == [round(full[-1][1], 5), round(full[-1][0], 5)]
+
+
+def test_a_place_given_as_coordinates_keeps_the_name_the_client_sends(client, services):
+    data = post(client, body(origin={**DALLAS, "name": "Dallas, Texas, United States"})).json()
+
+    assert data["origin"] == {"name": "Dallas, Texas, United States", **DALLAS}
+    assert data["destination"]["name"] == "39.7392, -104.9903"
