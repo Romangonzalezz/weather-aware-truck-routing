@@ -40,3 +40,8 @@ export function toDateTimeLocalValue(date: Date): string {
 export function departureToIso(dateTimeLocalValue: string): string {
   return new Date(dateTimeLocalValue).toISOString();
 }
+
+export function formatConditions(weather: { wind_mph: number; rain_in_hr: number; snow_in_hr: number }): string {
+  const inches = (value: number) => `${Number(value.toFixed(2))} in/hr`;
+  return `Wind ${Math.round(weather.wind_mph)} mph, rain ${inches(weather.rain_in_hr)}, snow ${inches(weather.snow_in_hr)}`;
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   departureToIso,
+  formatConditions,
   formatDuration,
   formatMiles,
   formatTime,
@@ -57,5 +58,17 @@ describe("departure input", () => {
   it("sends the local wall-clock time as an absolute instant", () => {
     const local = new Date(2026, 9, 17, 8, 0);
     expect(departureToIso("2026-10-17T08:00")).toBe(local.toISOString());
+  });
+});
+
+describe("formatConditions", () => {
+  it("lists wind, rain and snow with their units", () => {
+    expect(formatConditions({ wind_mph: 31.4, rain_in_hr: 0.12, snow_in_hr: 0 })).toBe(
+      "Wind 31 mph, rain 0.12 in/hr, snow 0 in/hr",
+    );
+  });
+
+  it("keeps two decimals only where they matter", () => {
+    expect(formatConditions({ wind_mph: 8, rain_in_hr: 0, snow_in_hr: 1.5 })).toBe("Wind 8 mph, rain 0 in/hr, snow 1.5 in/hr");
   });
 });
