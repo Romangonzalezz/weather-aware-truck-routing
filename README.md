@@ -103,13 +103,14 @@ network.
 
 ## Deploy: Vercel (frontend and API in one project)
 
-One Vercel project serves both. `vercel.json` builds the Vite app as the static site and runs
-`api/index.py`, which exposes the Django WSGI app as a Python function. `/api/*` goes to the function and every
-other path falls back to `index.html`. The browser calls relative `/api/...`, so everything is one origin and
+One Vercel project serves both, using Vercel Services (`vercel.json`). The `web` service builds the Vite
+app in `frontend/`; the `api` service runs the Django app in `backend/` as a Python function, detected from
+`manage.py` and `WSGI_APPLICATION`. Requests under `/api/` go to `api` with their full path, everything else to
+`web`, which falls back to `index.html`. The browser calls relative `/api/...`, so everything is one origin and
 production needs no CORS.
 
-1. Push the repo to GitHub and import it in Vercel. Keep the root directory at the repository root and leave the
-   framework preset as "Other"; `vercel.json` sets the build command and output directory.
+1. Push the repo to GitHub and import it in Vercel with the root directory at the repository root. Vercel reads
+   the services from `vercel.json`; no build settings are needed in the dashboard.
 2. Add the environment variables (Project Settings, Environment Variables):
    - `DJANGO_SECRET_KEY`: any long random string
    - `DEBUG`: `false`
