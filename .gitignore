@@ -1,0 +1,12 @@
+ASSIGNMENT.md
+odd/
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.env
+.env.local
+db.sqlite3
+staticfiles/
+.pytest_cache/
