@@ -1,9 +1,6 @@
 import os
-from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEV_SECRET_KEY = "dev-only-insecure-key"
 
@@ -21,7 +18,6 @@ ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", "localhost,127.0.0.1")
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:5173")
 
 INSTALLED_APPS = [
-    "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
     "routing",
@@ -30,7 +26,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
@@ -44,8 +39,6 @@ DATABASES: dict = {}
 USE_TZ = True
 TIME_ZONE = "UTC"
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES = {

@@ -8,6 +8,5 @@ dist/
 .env
 .env.local
 db.sqlite3
-staticfiles/
 .pytest_cache/
 LOOM_SCRIPT.md
