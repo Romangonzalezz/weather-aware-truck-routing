@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from math import asin, cos, radians, sin, sqrt
 
 EARTH_RADIUS_MI = 3958.8
+KM_PER_MILE = 1.609344
 
 LatLon = tuple[float, float]
 
