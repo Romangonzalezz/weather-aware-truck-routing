@@ -28,6 +28,15 @@ class Scale:
             return Level.NO_TRAVEL
         return Level(sum(value >= bound for bound in (moderate, high, severe)))
 
+    def score(self, value: float) -> float:
+        """Position on the 0-4 level axis, linear between bounds: 0 at no weather, 1 at Moderate's bound."""
+        lower = 0.0
+        for index, bound in enumerate(self.bounds):
+            if value < bound:
+                return index + (value - lower) / (bound - lower)
+            lower = bound
+        return float(Level.NO_TRAVEL)
+
 
 WIND = Scale((25, 35, 45, 55), no_travel_inclusive=True)
 RAIN = Scale((0.10, 0.25, 0.50, 1.00), no_travel_inclusive=False)
@@ -81,3 +90,20 @@ def classify_checkpoint(wind_mph: float, rain_in_hr: float, snow_in_hr: float, l
     if snow > Level.LOW:
         reasons.append(f"Snow {snow_in_hr:.1f} in/hr")
     return CheckpointRisk(max(wind, rain, snow), reasons)
+
+
+def wind_score(mph: float, load_lb: float) -> float:
+    return max(WIND.score(mph), float(wind_level_for_load(mph, load_lb)))
+
+
+def rain_score(inches_per_hour: float) -> float:
+    return RAIN.score(inches_per_hour)
+
+
+def snow_score(inches_per_hour: float) -> float:
+    return SNOW.score(inches_per_hour)
+
+
+def weather_score(wind_mph: float, rain_in_hr: float, snow_in_hr: float, load_lb: float) -> float:
+    """Continuous 0-4 severity for heatmaps; its integer part is the classified level (rain 1.00 and snow 3.0 score 4 but classify Severe)."""
+    return max(wind_score(wind_mph, load_lb), rain_score(rain_in_hr), snow_score(snow_in_hr))

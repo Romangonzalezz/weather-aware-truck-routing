@@ -4,8 +4,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from .clients.geocode import search_places
+from .corridor import corridor_forecast
 from .planner import plan_trip
-from .serializers import PlanRequestSerializer
+from .serializers import CorridorRequestSerializer, PlanRequestSerializer
 
 SUGGESTION_LIMIT = 5
 
@@ -24,3 +25,10 @@ def geocode(request: Request) -> Response:
         return Response([])
     places = search_places(query, limit=SUGGESTION_LIMIT)
     return Response([{"name": p.name, "lat": p.lat, "lon": p.lon} for p in places])
+
+
+@api_view(["POST"])
+def corridor(request: Request) -> Response:
+    serializer = CorridorRequestSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    return Response(corridor_forecast(**serializer.validated_data, now=timezone.now()))

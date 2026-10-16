@@ -2,15 +2,11 @@ from datetime import datetime, timedelta, timezone
 
 from .clients.geocode import resolve_place
 from .clients.routes import Route, fetch_routes
-from .clients.weather import HourlySeries, check_forecast_window, fetch_hourly
-from .errors import InvalidRequest
+from .clients.weather import HourlySeries, check_departure, check_forecast_window, fetch_hourly
 from .geo import Place
 from .risk import Level, classify_checkpoint
 from .sampling import Checkpoint, sample_checkpoints
 from .scoring import Candidate, RiskTotals, rank, summarize_risk
-
-# A browser's "now" is already a little in the past by the time the request arrives.
-PAST_DEPARTURE_GRACE = timedelta(hours=1)
 
 
 def iso(moment: datetime) -> str:
@@ -27,9 +23,7 @@ def plan_trip(
     interval_miles: int,
     now: datetime,
 ) -> dict:
-    if departure < now - PAST_DEPARTURE_GRACE:
-        raise InvalidRequest("Departure is in the past")
-    check_forecast_window(departure, now)
+    check_departure(departure, now)
 
     start, end = resolve_place(origin), resolve_place(destination)
     routes = fetch_routes(start, end, load_lb)

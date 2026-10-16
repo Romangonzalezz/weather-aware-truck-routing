@@ -7,6 +7,10 @@ from routing.risk import (
     snow_level,
     wind_level,
     wind_level_for_load,
+    wind_score,
+    rain_score,
+    snow_score,
+    weather_score,
 )
 
 L, M, H, S, N = Level.LOW, Level.MODERATE, Level.HIGH, Level.SEVERE, Level.NO_TRAVEL
@@ -85,3 +89,52 @@ def test_checkpoint_wind_reason_without_load_effect():
 
 def test_level_labels():
     assert [level.label for level in Level] == ["Low", "Moderate", "High", "Severe", "No Travel"]
+
+
+@pytest.mark.parametrize(
+    "mph, load_lb, expected",
+    [
+        (0, 0, 0),
+        (12.5, 0, 0.5),
+        (25, 0, 1),
+        (30, 0, 1.5),
+        (40, 0, 2.5),
+        (55, 0, 4),
+        (80, 0, 4),
+        (40, 40_000, 2.5),
+        (40, 40_001, 3),
+        (50, 30_000, 3.5),
+        (50, 30_001, 4),
+        (30, 80_000, 1.5),
+    ],
+)
+def test_wind_score_is_continuous_and_follows_the_load_rules(mph, load_lb, expected):
+    assert wind_score(mph, load_lb) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize(
+    "scorer, value, expected",
+    [
+        (rain_score, 0.05, 0.5),
+        (rain_score, 0.10, 1),
+        (rain_score, 0.175, 1.5),
+        (rain_score, 0.75, 3.5),
+        (rain_score, 4, 4),
+        (snow_score, 0.25, 0.5),
+        (snow_score, 1.5, 2.5),
+        (snow_score, 3.0, 4),
+    ],
+)
+def test_rain_and_snow_scores_interpolate_between_the_level_bounds(scorer, value, expected):
+    assert scorer(value) == pytest.approx(expected)
+
+
+def test_wind_score_rounds_down_to_the_wind_level():
+    for tenth in range(0, 700):
+        mph = tenth / 10
+        for load_lb in (0, 35_000, 45_000):
+            assert int(wind_score(mph, load_lb)) == wind_level_for_load(mph, load_lb)
+
+
+def test_weather_score_is_the_worst_condition():
+    assert weather_score(wind_mph=10, rain_in_hr=0.175, snow_in_hr=0.25, load_lb=0) == pytest.approx(1.5)

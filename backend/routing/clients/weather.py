@@ -13,6 +13,8 @@ PARALLEL_BATCHES = 4
 # Open-Meteo serves today plus the next 15 days.
 FORECAST_DAYS = 16
 HOURLY_VARIABLES = "wind_speed_10m,rain,showers,snowfall"
+# A browser's "now" is already a little in the past by the time the request arrives.
+PAST_DEPARTURE_GRACE = timedelta(hours=1)
 
 
 @dataclass(frozen=True)
@@ -33,6 +35,12 @@ class HourlySeries:
         if not 0 <= index < len(self.samples):
             raise InvalidRequest("The trip reaches beyond the available weather forecast")
         return self.samples[index]
+
+
+def check_departure(departure: datetime, now: datetime) -> None:
+    if departure < now - PAST_DEPARTURE_GRACE:
+        raise InvalidRequest("Departure is in the past")
+    check_forecast_window(departure, now)
 
 
 def check_forecast_window(last_time: datetime, now: datetime) -> None:
