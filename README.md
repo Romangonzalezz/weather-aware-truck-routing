@@ -5,7 +5,7 @@ forecast along each route at the time the truck will actually be there, classifi
 assignment's wind, rain, snow and load rules, recommends a route, and draws a 0-48 hour weather heatmap
 along the trip corridor.
 
-Live demo: _add the Vercel URL here_
+Live demo: https://truck-routing-delta.vercel.app
 
 ## Run it locally
 
