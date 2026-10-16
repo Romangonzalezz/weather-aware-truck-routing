@@ -4,7 +4,7 @@ from .clients.geocode import resolve_place
 from .clients.routes import Route, fetch_routes
 from .clients.weather import HourlySeries, check_departure, check_forecast_window, fetch_hourly
 from .geo import Place
-from .risk import Level, classify_checkpoint
+from .risk import classify_checkpoint
 from .sampling import Checkpoint, sample_checkpoints
 from .scoring import Candidate, RiskTotals, rank, summarize_risk
 
